@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>English Learning & Quiz</title>
+  <style>
+    :root{
+      --bg:#f4f8ff;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --pri:#2563eb;
+      --pri2:#0ea5e9;
+      --sec:#16a34a;
+      --acc:#f59e0b;
+      --danger:#dc2626;
+      --line:#dbe7ff;
+      --soft:#eef5ff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    header{
+      padding:28px 16px 18px;
+      text-align:center;
+      background:#eaf2ff;
+      border-bottom:1px solid var(--line);
+    }
+    header h1{
+      margin:0 0 8px;
+      color:var(--pri);
+    }
+    header p,.muted{color:var(--muted)}
+    .container{
+      max-width:1100px;
+      margin:0 auto;
+      padding:16px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+      box-shadow:0 10px 24px rgba(37,99,235,.06);
+      margin-bottom:16px;
+    }
+    .inner{background:#f9fbff}
+    .hidden{display:none !important}
+    .grid{display:grid;gap:16px}
+    .two{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+    .topbar,.topbar-inner{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .badges,.scorebox,.actions,.nav{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .pill,.stat{
+      background:var(--soft);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 14px;
+    }
+    .levels,.modules,.topic-grid{
+      display:grid;
+      gap:10px;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    }
+    .choice{
+      padding:14px;
+      text-align:left;
+      background:#f8fbff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      color:var(--text);
+      cursor:pointer;
+      transition:.2s;
+    }
+    .choice:hover{transform:translateY(-1px);border-color:#bcd3ff}
+    .choice.active{
+      border-color:var(--pri);
+      background:#dcebff;
+    }
+    .choice.correct{
+      border-color:var(--sec);
+      background:#e7f9ed;
+    }
+    .choice.wrong{
+      border-color:var(--danger);
+      background:#ffe8e8;
+    }
+    .lesson-list{
+      display:grid;
+      gap:10px;
+      margin-top:14px;
+    }
+    .lesson-item{
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      cursor:pointer;
+      background:#f8fbff;
+    }
+    .lesson-item.active{
+      outline:2px solid var(--pri);
+      background:#eaf2ff;
+    }
+    .progress{
+      height:10px;
+      background:#dbeafe;
+      border-radius:999px;
+      overflow:hidden;
+      margin:10px 0 12px;
+    }
+    .progress > div{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,#60a5fa,#16a34a);
+    }
+    .lesson-content,.question{line-height:1.7}
+    .lesson-box{
+      margin-top:14px;
+      padding:14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+    }
+    .answer-area{
+      margin-top:14px;
+      display:grid;
+      gap:10px;
+    }
+    .input{
+      width:100%;
+      padding:12px 14px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--text);
+      outline:none;
+    }
+    .input:focus{border-color:#93c5fd;box-shadow:0 0 0 3px rgba(147,197,253,.25)}
+    .btn{
+      border:0;
+      border-radius:12px;
+      padding:12px 16px;
+      background:var(--pri);
+      color:#fff;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .btn.secondary{background:#e2e8f0;color:#1f2937}
+    .btn.success{background:var(--sec)}
+    .btn.warning{background:var(--acc)}
+    .btn.danger{background:var(--danger)}
+    .footer{
+      text-align:center;
+      color:var(--muted);
+      padding:24px 16px;
+    }
+    .section-title{
+      margin:0 0 10px;
+      color:#0f172a;
+    }
+    .topic-title{
+      margin:0 0 6px;
+      color:var(--pri);
+    }
+    .formula{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      background:#eff6ff;
+      border:1px solid #bfdbfe;
+      color:#1d4ed8;
+      margin:6px 0 10px;
+      font-weight:700;
+    }
+    .mini{
+      padding:10px 12px;
+      border-left:4px solid var(--pri2);
+      background:#f8fbff;
+      border-radius:10px;
+      margin-top:10px;
+    }
+    .review{
+      display:grid;
+      gap:10px;
+      margin-top:14px;
+    }
+    .review-item{
+      padding:12px;
+      border-radius:12px;
+      background:#fff;
+      border:1px solid var(--line);
+    }
+    @media (max-width:640px){
+      header{padding-top:18px}
+      .card{padding:14px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>English Learning & Quiz</h1>
+    <p>Study by level, read explanations, see formulas, and take quizzes with credit points.</p>
+  </header>
+
+  <main class="container">
+    <section class="card topbar">
+      <div class="badges">
+        <span class="pill">Total Credits: <b id="credits">0</b></span>
+        <span class="pill">Last Score: <b id="lastScore">-</b></span>
+      </div>
+      <button class="btn secondary" id="homeBtn">Home</button>
+    </section>
+
+    <section id="home" class="grid two">
+      <div class="card">
+        <h2 class="section-title">Learning</h2>
+        <p class="muted">Open lessons by level and topic.</p>
+        <div class="levels" id="learningLevels"></div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">Quiz</h2>
+        <p class="muted">Start a 10-question quiz by level.</p>
+        <div class="levels" id="quizLevels"></div>
+      </div>
+    </section>
+
+    <section id="learningView" class="card hidden">
+      <div class="topbar-inner">
+        <div>
+          <h2 id="learningTitle">Learning</h2>
+          <p class="muted" id="learningSub"></p>
+        </div>
+        <button class="btn secondary" id="backLearning">Back</button>
+      </div>
+
+      <div class="grid two">
+        <div>
+          <div class="modules" id="moduleList"></div>
+          <div class="lesson-list" id="lessonList"></div>
+        </div>
+
+        <div class="card inner">
+          <h3 id="lessonTitle">Select a lesson</h3>
+          <div class="progress"><div id="lessonProgress"></div></div>
+          <div id="lessonContent" class="lesson-content muted">Lesson content will appear here.</div>
+
+          <div class="actions">
+            <button class="btn secondary" id="prevLesson">Previous</button>
+            <button class="btn secondary" id="nextLesson">Next</button>
+            <button class="btn success" id="markDone">Mark Completed</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="quizView" class="card hidden">
+      <div class="topbar-inner">
+        <div>
+          <h2 id="quizTitle">Quiz</h2>
+          <p class="muted" id="quizSub"></p>
+        </div>
+        <button class="btn secondary" id="backQuiz">Back</button>
+      </div>
+
+      <div id="quizSetup">
+        <div class="levels" id="quizLevelSelect"></div>
+      </div>
+
+      <div id="quizArea" class="hidden">
+        <div class="scorebox">
+          <div class="stat">Question: <b id="qNum">1</b>/10</div>
+          <div class="stat">Score: <b id="scoreNow">0</b></div>
+          <div class="stat">Credit Earned: <b id="creditNow">0</b></div>
+          <div class="stat">Time: <b id="timeNow">0:00</b></div>
+        </div>
+
+        <div class="card inner">
+          <div class="question" id="questionText"></div>
+          <div id="answerArea" class="answer-area"></div>
+
+          <div class="actions">
+            <button class="btn success" id="submitAnswer">Submit</button>
+            <button class="btn secondary" id="nextQuestion">Next</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="resultArea" class="hidden"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Built with HTML, CSS, and JavaScript for Acode Android.
+  </footer>
+
+  <script>
+    const data = {
+      Beginner: {
+        lessons: [
+          {
+            module: "Greetings",
+            title: "Greetings and Introductions",
+            content: `
+              <div class="lesson-box">
+                <p><b>Explanation:</b> Greetings are words used when meeting or talking to someone.</p>
+                <p><b>Examples:</b> Hello, Hi, Good morning, Good afternoon, Good evening, Goodbye.</p>
+                <p><b>Usage:</b> Say <i>Hello</i> when you meet someone. Say <i>Goodbye</i> when you leave.</p>
+                <div class="mini"><b>Practice:</b> Write one greeting you use in the morning.</div>
+              </div>
+            `
+          },
+          {
+            module: "Alphabet",
+            title: "English Alphabet",
+            content: `
+              <div class="lesson-box">
+                <p><b>Explanation:</b> The English alphabet has 26 letters from A to Z.</p>
+                <p><b>Examples:</b> A, B, C, D, E, F, G ... Z.</p>
+                <p><b>Tips:</b> Learn the letter sounds and practice spelling simple words like cat, book, and house.</p>
+                <div class="mini"><b>Practice:</b> Spell the word <i>book</i> letter by letter.</div>
+              </div>
+            `
+          },
+          {
+            module: "Numbers",
+            title: "Numbers 1 to 20",
+            content: `
+              <div class="lesson-box">
+                <p><b>Explanation:</b> Numbers help us count objects, money, and time.</p>
+                <p><b>Examples:</b> one, two, three, four, five ... twenty.</p>
+                <p><b>Use:</b> I have three apples. She is ten years old.</p>
+                <div class="mini"><b>Practice:</b> Write the English word for 7 and 15.</div>
+              </div>
+            `
+          },
+          {
+            module: "Family",
+            title: "Family Members",
+            content: `
+              <div class="lesson-box">
+                <p><b>Explanation:</b> Family words describe people in your home or relatives.</p>
+                <p><b>Examples:</b> father, mother, brother, sister, grandfather, grandmother.</p>
+                <p><b>Use:</b> My father is a teacher. My sister is a student.</p>
+                <div class="mini"><b>Practice:</b> Write the English word for 'ibu'.</div>
+              </div>
+            `
+          },
+          {
+            module: "Basic Verbs",
+            title: "Basic Verbs",
+            content: `
+              <div class="lesson-box">
+                <p><b>Explanation:</b> Verbs are action words. Basic verbs are the most common action words.</p>
+                <p><b>Examples:</b> go, eat, drink, run, read, sleep, play.</p>
+                <p><b>Use:</b> I eat rice. They play football. She reads a book.</p>
+                <div class="mini"><b>Practice:</b> Make a sentence using the verb <i>sleep</i>.</div>
+              </div>
+            `
+          }
+        ],
+        questions: [
+          { type:"mcq", q:"What is the English word for 'buku'?", options:["Book","Pen","Table","Chair"], answer:"Book", explain:"'Buku' means 'book' in English." },
+          { type:"truefalse", q:"The word 'apple' means 'apel'.", answer:"True", explain:"Yes, apple means apel." },
+          { type:"fill", q:"The English word for 'air' is ____.", answer:"water", explain:"'Air' in Indonesian means 'water'." },
+          { type:"short", q:"Write the English word for 'rumah'.", answer:"house", explain:"'Rumah' means 'house'." },
+          { type:"match", q:"Match the word with the meaning: Cat = ?", options:["Dog","Kucing","Bird","Fish"], answer:"Kucing", explain:"Cat means kucing." },
+          { type:"mcq", q:"Choose the correct greeting in the morning.", options:["Good night","Good morning","Goodbye","See you"], answer:"Good morning", explain:"Morning greeting is 'Good morning'." },
+          { type:"truefalse", q:"'Pen' is used to write.", answer:"True", explain:"Correct, a pen is used for writing." },
+          { type:"fill", q:"I drink ____ every day.", answer:"milk", explain:"Milk is a common daily drink." },
+          { type:"short", q:"Write the English word for 'teman'.", answer:"friend", explain:"'Teman' means 'friend'." },
+          { type:"mcq", q:"Which one is a fruit?", options:["Car","Banana","Desk","Window"], answer:"Banana", explain:"Banana is a fruit." }
+        ]
+      },
+
+      Elementary: {
+        lessons: [
+          {
+            module: "Daily Activities",
+            title: "Daily Activities",
+            content: `
+              <div class="lesson-box">
+                <p><b>Explanation:</b> Daily activities are things we do every day.</p>
+                <p><b>Examples:</b> wake up, brush teeth, take a bath, eat breakfast, study, go to school, sleep.</p>
+                <p><b>Use:</b> I wake up at 6 a.m. She studies English after lunch.</p>
+                <div class="mini"><b>Practice:</b> Make a sentence using <i>go to school</i>.</div>
+              </div>
+            `
+          },
+          {
+            module: "Present Continuous",
+            title: "Present Continuous",
+            content: `
+              <div class="lesson-box">
+                <p><b>Explanation:</b> Use this tense for actions happening now.</p>
+                <p><b>Formula:</b> <span class="formula">Subject + am/is/are + Verb-ing</span></p>
+                <p><b>Examples:</b> I am reading a book. She is cooking dinner. They are playing football.</p>
+                <p><b>Tips:</b> Use <i>am</i> with I, <i>is</i> with he/she/it, and <i>are</i> with we/you/they.</p>
+                <div class="mini"><b>Practice:</b> Change “She read a book” into present continuous.</div>
+              </div>
+            `
+          },
+          {
+            module: "Places",
+            title: "Places in Town",
+            content: `
+              <div class="lesson-box">
+                <p><b>Explanation:</b> Places are locations in a city or town.</p>
+                <p><b>Examples:</b> school, hospital, market, park, library, bank, station.</p>
+                <p><b>Use:</b> I go to the library to read books. We meet at the park.</p>
+                <div class="mini"><b>Practice:</b> Write one place near your home.</div>
+              </div>
+            `
+          },
+          {
+            module: "Simple Conversation",
+            title: "Simple Conversation",
+            content: `
+              <div class="lesson-box">
+                <p><b>Explanation:</b> Simple conversation is short speaking between two people.</p>
+                <p><b>Examples:</b></p>
+                <p>— Hello, how are you?<br>— I'm fine, thank you.</p>
+                <p>— Where are you going?<br>— I'm going to school.</p>
+                <div class="mini"><b>Practice:</b> Write a short greeting and reply.</div>
+              </div>
+            `
+          }
+        ],
+        questions: [
+          { type:"mcq", q:"Which sentence is in present continuous?", options:["She reads books.","She is reading a book.","She read books.","She will read books."], answer:"She is reading a book.", explain:"am/is/are + verb-ing is present continuous." },
+          { type:"truefalse", q:"'He is playing football' is present continuous.", answer:"True", explain:"Yes, it shows action happening now." },
+          { type:"fill", q:"We ____ breakfast at 7 a.m.", answer:"eat", explain:"The correct verb is 'eat'." },
+          { type:"short", q:"Write the English word for 'makan'.", answer:"eat", explain:"'Makan' means 'eat'." },
+          { type:"match", q:"Match: 'Teacher' = ?", options:["Guru","Doctor","Farmer","Student"], answer:"Guru", explain:"Teacher means guru." },
+          { type:"mcq", q:"Choose the correct plural form.", options:["childs","children","childes","child"], answer:"children", explain:"The plural of child is children." },
+          { type:"truefalse", q:"'Yesterday' is used for future time.", answer:"False", explain:"Yesterday refers to the past." },
+          { type:"fill", q:"They are ____ TV now.", answer:"watching", explain:"Present continuous uses verb-ing." },
+          { type:"short", q:"Write the English word for 'minum'.", answer:"drink", explain:"'Minum' means 'drink'." },
+          { type:"mcq", q:"Which word is an adjective?", options:["beautiful","run","eat","sleep"], answer:"beautiful", explain:"Beautiful describes a noun." }
+        ]
+      },
+
+      Intermediate: {
+        lessons: [
+          {
+            module: "Travel",
+            title: "Travel Vocabulary",
+            content: `
+              <div class="lesson-box">
+                <p><b>Explanation:</b> Travel vocabulary is used when talking about trips and journeys.</p>
+                <p><b>Examples:</b> airport, ticket, luggage, hotel, passport, destination, itinerary.</p>
+                <p><b>Use:</b> I bought a ticket to Bali. My luggage is heavy.</p>
+                <div class="mini"><b>Practice:</b> Write the meaning of <i>passport</i>.</div>
+              </div>
+            `
+          },
+          {
+            module: "Past Tense",
+            title: "Past Tense",
+            content: `
+              <div class="lesson-box">
+                <p><b>Explanation:</b> Past tense is used for finished actions in the past.</p>
+                <p><b>Formula:</b> <span class="formula">Subject + Verb 2 / past form</span></p>
+                <p><b>Examples:</b> I visited Jakarta yesterday. She watched a movie last night. They went home early.</p>
+                <p><b>Tips:</b> Regular verbs often add -ed, but irregular verbs change form.</p>
+                <div class="mini"><b>Practice:</b> Change “go” into past tense.</div>
+              </div>
+            `
+          },
+          {
+            module: "Adjectives and Adverbs",
+            title: "Adjectives and Adverbs",
+            content: `
+              <div class="lesson-box">
+                <p><b>Explanation:</b> Adjectives describe nouns, while adverbs describe verbs, adjectives, or other adverbs.</p>
+                <p><b>Examples:</b> tall, happy, beautiful (adjectives); quickly, slowly, carefully (adverbs).</p>
+                <p><b>Use:</b> She is a careful driver. He runs quickly.</p>
+                <div class="mini"><b>Practice:</b> Identify which word is an adverb: slowly, big, chair.</div>
+              </div>
+            `
+          },
+          {
+            module: "Reading Comprehension",
+            title: "Reading Comprehension",
+            content: `
+              <div class="lesson-box">
+                <p><b>Explanation:</b> Reading comprehension means understanding a text and finding its meaning.</p>
+                <p><b>How to do it:</b> Read the title, find the main idea, look for details, and answer questions carefully.</p>
+                <p><b>Example:</b> If a text says “Ali went to the market to buy fruit,” the main idea is shopping at the market.</p>
+                <div class="mini"><b>Practice:</b> Read a short paragraph and write its main idea.</div>
+              </div>
+            `
+          }
+        ],
+        questions: [
+          { type:"mcq", q:"Choose the past tense of 'go'.", options:["Goed","Went","Going","Gone"], answer:"Went", explain:"The past tense of go is went." },
+          { type:"truefalse", q:"'I visited Bali last year' is in past tense.", answer:"True", explain:"Yes, it uses a finished time reference." },
+          { type:"fill", q:"She ____ to school yesterday.", answer:"went", explain:"The past tense of go is went." },
+          { type:"short", q:"Write the opposite of 'early'.", answer:"late", explain:"Late is the opposite of early." },
+          { type:"match", q:"Match: 'Destination' = ?", options:["Tujuan","Airport","Ticket","Hotel"], answer:"Tujuan", explain:"Destination means tujuan." },
+          { type:"mcq", q:"Which sentence is correct?", options:["He don't like tea.","He doesn't likes tea.","He doesn't like tea.","He no like tea."], answer:"He doesn't like tea.", explain:"Third person singular uses doesn't." },
+          { type:"truefalse", q:"'Had' is the past form of 'have'.", answer:"True", explain:"Correct, had is the past tense of have." },
+          { type:"fill", q:"They ____ a movie last night.", answer:"watched", explain:"Past tense of watch is watched." },
+          { type:"short", q:"Write the past tense of 'buy'.", answer:"bought", explain:"Past tense of buy is bought." },
+          { type:"mcq", q:"Which is an adverb?", options:["quickly","quick","quickness","quicker"], answer:"quickly", explain:"Adverbs often describe verbs." }
+        ]
+      },
+
+      Advanced: {
+        lessons: [
+          {
+            module: "Conditionals",
+            title: "Conditionals",
+            content: `
+              <div class="lesson-box">
+                <p><b>Explanation:</b> Conditionals talk about real or unreal situations and their results.</p>
+                <p><b>Formula 1:</b> <span class="formula">If + present simple, subject + will + verb</span></p>
+                <p><b>Example:</b> If it rains, we will stay at home.</p>
+                <p><b>Formula 2:</b> <span class="formula">If + past simple, subject + would + verb</span></p>
+                <p><b>Example:</b> If I had time, I would travel.</p>
+                <div class="mini"><b>Practice:</b> Complete: If I study hard, I ____ pass the test.</div>
+              </div>
+            `
+          },
+          {
+            module: "Academic Vocabulary",
+            title: "Academic Vocabulary",
+            content: `
+              <div class="lesson-box">
+                <p><b>Explanation:</b> Academic vocabulary is used in school, essays, reports, and formal writing.</p>
+                <p><b>Examples:</b> analyze, conclude, evidence, theory, hypothesis, discuss, evaluate.</p>
+                <p><b>Use:</b> We need evidence before we conclude. The theory explains the result.</p>
+                <div class="mini"><b>Practice:</b> Use the word <i>analyze</i> in a sentence.</div>
+              </div>
+            `
+          },
+          {
+            module: "Passive Voice",
+            title: "Passive Voice",
+            content: `
+              <div class="lesson-box">
+                <p><b>Explanation:</b> Passive voice focuses on the action or the receiver of the action.</p>
+                <p><b>Formula:</b> <span class="formula">Object + to be + past participle + by + subject</span></p>
+                <p><b>Example:</b> The cake is made by my mother.</p>
+                <p><b>Another Example:</b> The letters were sent yesterday.</p>
+                <div class="mini"><b>Practice:</b> Change “My father made the cake” into passive voice.</div>
+              </div>
+            `
+          },
+          {
+            module: "Opinion Writing",
+            title: "Opinion Writing",
+            content: `
+              <div class="lesson-box">
+                <p><b>Explanation:</b> Opinion writing gives your personal view with reasons and examples.</p>
+                <p><b>Structure:</b> opinion + reason 1 + reason 2 + example + conclusion.</p>
+                <p><b>Example:</b> I think reading is important because it improves knowledge and vocabulary.</p>
+                <p><b>Tips:</b> Use words like <i>in my opinion</i>, <i>I believe</i>, and <i>for example</i>.</p>
+                <div class="mini"><b>Practice:</b> Write one opinion sentence about studying English.</div>
+              </div>
+            `
+          }
+        ],
+        questions: [
+          { type:"mcq", q:"What is the noun form of 'decide'?", options:["decision","decide","decisive","deciding"], answer:"decision", explain:"The noun form is decision." },
+          { type:"truefalse", q:"'If I had money, I would travel' is a conditional sentence.", answer:"True", explain:"Yes, it is a second conditional structure." },
+          { type:"fill", q:"If she ____ harder, she would pass the test.", answer:"studied", explain:"Second conditional uses past tense in the if-clause." },
+          { type:"short", q:"Write the adjective form of 'danger'.", answer:"dangerous", explain:"Dangerous is the adjective form." },
+          { type:"match", q:"Match: 'Evidence' = ?", options:["Bukti","Pendapat","Ide","Kesimpulan"], answer:"Bukti", explain:"Evidence means bukti." },
+          { type:"mcq", q:"Which sentence is more formal?", options:["I wanna go.","I want to go.","Gonna go.","Wanna go."], answer:"I want to go.", explain:"This is the most formal and correct form." },
+          { type:"truefalse", q:"'Would have gone' is used in third conditional.", answer:"True", explain:"Yes, it is used to describe unreal past situations." },
+          { type:"fill", q:"She ____ already finished the report before the meeting started.", answer:"had", explain:"Past perfect uses had + past participle." },
+          { type:"short", q:"Write the noun form of 'strong'.", answer:"strength", explain:"Strength is the noun form." },
+          { type:"mcq", q:"Which is an example of passive voice?", options:["The cat chased the mouse.","The mouse was chased by the cat.","The cat is chasing the mouse.","The cat will chase the mouse."], answer:"The mouse was chased by the cat.", explain:"Passive voice focuses on the receiver of the action." }
+        ]
+      }
+    };
+
+    const levels = Object.keys(data);
+    const state = {
+      view: "home",
+      level: null,
+      module: null,
+      lessonIndex: 0,
+      quizIndex: 0,
+      quizQuestions: [],
+      answers: [],
+      score: 0,
+      credits: 0,
+      lastScore: "-",
+      startTime: 0,
+      timer: null
+    };
+
+    const storage = JSON.parse(localStorage.getItem("engApp") || "{}");
+    state.credits = storage.credits || 0;
+    state.lastScore = storage.lastScore || "-";
+
+    const els = {
+      credits: document.getElementById("credits"),
+      lastScore: document.getElementById("lastScore"),
+      homeBtn: document.getElementById("homeBtn"),
+      home: document.getElementById("home"),
+      learningView: document.getElementById("learningView"),
+      quizView: document.getElementById("quizView"),
+      backLearning: document.getElementById("backLearning"),
+      backQuiz: document.getElementById("backQuiz"),
+      learningLevels: document.getElementById("learningLevels"),
+      quizLevels: document.getElementById("quizLevels"),
+      learningTitle: document.getElementById("learningTitle"),
+      learningSub: document.getElementById("learningSub"),
+      moduleList: document.getElementById("moduleList"),
+      lessonList: document.getElementById("lessonList"),
+      lessonTitle: document.getElementById("lessonTitle"),
+      lessonProgress: document.getElementById("lessonProgress"),
+      lessonContent: document.getElementById("lessonContent"),
+      prevLesson: document.getElementById("prevLesson"),
+      nextLesson: document.getElementById("nextLesson"),
+      markDone: document.getElementById("markDone"),
+      quizTitle: document.getElementById("quizTitle"),
+      quizSub: document.getElementById("quizSub"),
+      quizSetup: document.getElementById("quizSetup"),
+      quizLevelSelect: document.getElementById("quizLevelSelect"),
+      quizArea: document.getElementById("quizArea"),
+      resultArea: document.getElementById("resultArea"),
+      qNum: document.getElementById("qNum"),
+      scoreNow: document.getElementById("scoreNow"),
+      creditNow: document.getElementById("creditNow"),
+      timeNow: document.getElementById("timeNow"),
+      questionText: document.getElementById("questionText"),
+      answerArea: document.getElementById("answerArea"),
+      submitAnswer: document.getElementById("submitAnswer"),
+      nextQuestion: document.getElementById("nextQuestion")
+    };
+
+    function save() {
+      localStorage.setItem(
+        "engApp",
+        JSON.stringify({
+          credits: state.credits,
+          lastScore: state.lastScore,
+          completed: storage.completed || {}
+        })
+      );
+    }
+
+    function show(view) {
+      [els.home, els.learningView, els.quizView].forEach(el => el.classList.add("hidden"));
+      document.getElementById(view).classList.remove("hidden");
+      state.view = view;
+    }
+
+    function renderHome() {
+      show("home");
+    }
+
+    function renderLevelButtons(target, mode) {
+      document.getElementById(target).innerHTML = levels
+        .map(level => `<button class="choice" data-mode="${mode}" data-level="${level}">${level}</button>`)
+        .join("");
+
+      document.querySelectorAll(`[data-mode="${mode}"]`).forEach(btn => {
+        btn.onclick = () => {
+          if (mode === "learn") openLearning(btn.dataset.level);
+          else openQuizSetup(btn.dataset.level);
+        };
+      });
+    }
+
+    function openLearning(level) {
+      state.level = level;
+      show("learningView");
+      els.learningTitle.textContent = `Learning - ${level}`;
+      els.learningSub.textContent = "Choose a module and lesson.";
+
+      const modules = [...new Set(data[level].lessons.map(x => x.module))];
+      els.moduleList.innerHTML = modules
+        .map(m => `<button class="choice" data-module="${m}">${m}</button>`)
+        .join("");
+
+      document.querySelectorAll("[data-module]").forEach(btn => {
+        btn.onclick = () => {
+          state.module = btn.dataset.module;
+          state.lessonIndex = data[level].lessons.findIndex(x => x.module === state.module);
+          renderLessons();
+        };
+      });
+
+      state.module = modules[0];
+      state.lessonIndex = 0;
+      renderLessons();
+    }
+
+    function renderLessons() {
+      const lessons = data[state.level].lessons.filter(x => x.module === state.module);
+
+      els.lessonList.innerHTML = lessons
+        .map(
+          (lesson, i) => `
+          <div class="lesson-item ${i === state.lessonIndex ? "active" : ""}" data-i="${i}">
+            <b>${lesson.title}</b>
+            <div class="muted">${lesson.module}</div>
+          </div>`
+        )
+        .join("");
+
+      document.querySelectorAll(".lesson-item").forEach(el => {
+        el.onclick = () => {
+          state.lessonIndex = Number(el.dataset.i);
+          showLesson();
+        };
+      });
+
+      showLesson();
+    }
+
+    function showLesson() {
+      const lessons = data[state.level].lessons.filter(x => x.module === state.module);
+      const lesson = lessons[state.lessonIndex];
+      if (!lesson) return;
+
+      els.lessonTitle.textContent = lesson.title;
+      els.lessonContent.innerHTML = lesson.content;
+      els.lessonProgress.style.width = `${((state.lessonIndex + 1) / lessons.length) * 100}%`;
+
+      document.querySelectorAll(".lesson-item").forEach((item, i) => {
+        item.classList.toggle("active", i === state.lessonIndex);
+      });
+
+      els.prevLesson.onclick = () => {
+        state.lessonIndex = Math.max(0, state.lessonIndex - 1);
+        renderLessons();
+      };
+
+      els.nextLesson.onclick = () => {
+        state.lessonIndex = Math.min(lessons.length - 1, state.lessonIndex + 1);
+        renderLessons();
+      };
+
+      els.markDone.onclick = () => {
+        storage.completed = storage.completed || {};
+        storage.completed[`${state.level}-${state.module}-${lesson.title}`] = true;
+        save();
+        alert("Lesson completed!");
+      };
+    }
+
+    function openQuizSetup(level) {
+      state.level = level;
+      show("quizView");
+      els.quizTitle.textContent = `Quiz - ${level}`;
+      els.quizSub.textContent = "Select a level to start 10 questions.";
+      els.quizArea.classList.add("hidden");
+      els.resultArea.classList.add("hidden");
+      els.quizSetup.classList.remove("hidden");
+
+      els.quizLevelSelect.innerHTML = levels
+        .map(l => `<button class="choice" data-quiz-level="${l}">${l}</button>`)
+        .join("");
+
+      document.querySelectorAll("[data-quiz-level]").forEach(btn => {
+        btn.onclick = () => startQuiz(btn.dataset.quizLevel);
+      });
+    }
+
+    function startQuiz(level) {
+      state.level = level;
+      state.quizQuestions = [...data[level].questions].slice(0, 10);
+      state.quizIndex = 0;
+      state.answers = [];
+      state.score = 0;
+      state.startTime = Date.now();
+
+      els.quizSetup.classList.add("hidden");
+      els.quizArea.classList.remove("hidden");
+      els.resultArea.classList.add("hidden");
+
+      clearInterval(state.timer);
+      renderQuestion();
+
+      state.timer = setInterval(() => {
+        if (state.view === "quizView" && !els.resultArea.classList.contains("hidden")) return;
+        const s = Math.floor((Date.now() - state.startTime) / 1000);
+        els.timeNow.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+      }, 1000);
+    }
+
+    function renderQuestion() {
+      const q = state.quizQuestions[state.quizIndex];
+      els.qNum.textContent = state.quizIndex + 1;
+      els.scoreNow.textContent = state.score;
+
+      const credit = state.score >= 90 ? 10 : state.score >= 70 ? 5 : state.score > 0 ? 1 : 0;
+      els.creditNow.textContent = credit;
+      els.questionText.textContent = q.q;
+
+      if (q.type === "mcq" || q.type === "truefalse" || q.type === "match") {
+        els.answerArea.innerHTML = q.options
+          .map(opt => `<button class="choice" data-opt="${opt}">${opt}</button>`)
+          .join("");
+
+        document.querySelectorAll("[data-opt]").forEach(btn => {
+          btn.onclick = () => {
+            document.querySelectorAll("[data-opt]").forEach(x => x.classList.remove("active"));
+            btn.classList.add("active");
+            els.submitAnswer.dataset.answer = btn.dataset.opt;
+          };
+        });
+      } else {
+        els.answerArea.innerHTML = '<input class="input" id="shortAns" placeholder="Type your answer">';
+        els.submitAnswer.dataset.answer = "";
+      }
+
+      els.submitAnswer.onclick = () => {
+        const q = state.quizQuestions[state.quizIndex];
+        const ans = (q.type === "mcq" || q.type === "truefalse" || q.type === "match")
+          ? (els.submitAnswer.dataset.answer || "")
+          : document.getElementById("shortAns").value.trim();
+
+        const correct = String(ans).trim().toLowerCase() === String(q.answer).trim().toLowerCase();
+
+        state.answers[state.quizIndex] = {
+          question: q.q,
+          user: ans,
+          correct: q.answer,
+          explain: q.explain,
+          isCorrect: correct
+        };
+
+        if (correct) state.score += 10;
+        els.scoreNow.textContent = state.score;
+      };
+
+      els.nextQuestion.onclick = () => {
+        if (!state.answers[state.quizIndex]) {
+          alert("Please submit an answer first.");
+          return;
+        }
+
+        if (state.quizIndex < state.quizQuestions.length - 1) {
+          state.quizIndex++;
+          renderQuestion();
+        } else {
+          finishQuiz();
+        }
+      };
+    }
+
+    function finishQuiz() {
+      clearInterval(state.timer);
+
+      const time = Math.floor((Date.now() - state.startTime) / 1000);
+      const earned = state.score >= 90 ? 10 : state.score >= 70 ? 5 : 1;
+
+      state.credits += earned;
+      state.lastScore = state.score;
+      save();
+
+      els.credits.textContent = state.credits;
+      els.lastScore.textContent = state.lastScore;
+
+      els.quizArea.classList.add("hidden");
+      els.resultArea.classList.remove("hidden");
+
+      const correctCount = state.answers.filter(a => a?.isCorrect).length;
+
+      els.resultArea.innerHTML = `
+        <div class="card inner">
+          <h3>Quiz Result</h3>
+          <p>You answered <b>${correctCount}</b>/10 correctly.</p>
+          <p>Score: <b>${state.score}</b> / 100</p>
+          <p>Credit Earned: <b>${earned}</b></p>
+          <p>Time Taken: <b>${Math.floor(time / 60)}:${String(time % 60).padStart(2, "0")}</b></p>
+          <button class="btn warning" id="retryQuiz">Retry Quiz</button>
+          <div class="review"></div>
+        </div>
+      `;
+
+      const review = els.resultArea.querySelector(".review");
+      review.innerHTML = state.answers
+        .map(
+          (a, i) => `
+          <div class="review-item">
+            <b>Q${i + 1}:</b> ${a.question}<br>
+            <span class="muted">Your answer:</span> ${a.user || "-"}<br>
+            <span class="muted">Correct answer:</span> ${a.correct}<br>
+            <span class="muted">${a.explain}</span>
+          </div>`
+        )
+        .join("");
+
+      document.getElementById("retryQuiz").onclick = () => openQuizSetup(state.level);
+    }
+
+    els.homeBtn.onclick = renderHome;
+    els.backLearning.onclick = renderHome;
+    els.backQuiz.onclick = renderHome;
+
+    renderLevelButtons("learningLevels", "learn");
+    renderLevelButtons("quizLevels", "quiz");
+  </script>
+</body>
+</html>
